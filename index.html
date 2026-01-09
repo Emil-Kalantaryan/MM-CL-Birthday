@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Pasa Palabra</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at top, #0a2a43, #03131f);
+      color: white;
+    }
+
+    .game {
+      width: 700px;
+      height: 700px;
+      position: relative;
+      top: -28px;
+    }
+
+    /* Marcador */
+    .score {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 20px;
+    }
+
+    /* Rosco */
+    .rosco {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .letter {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #1e90ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .letter.active {
+      box-shadow: 0 0 20px #6490ff;
+      transform: scale(1.25);
+    }
+
+    .letter.correct {
+      background: #1fa84d;
+    }
+
+    .letter.wrong {
+      background: #d54434;
+    }
+
+    /* Centro */
+    .center {
+      width: 60%;
+      height: 60%;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 30px;
+      font-size: 20px;
+    }
+
+    /* Botones */
+    .controls {
+      position: absolute;
+      bottom: -28px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      transition: opacity 0.3s ease;
+    }
+
+    button {
+      padding: 14px 26px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      color: white;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .correct-btn {
+      background: #27ae60;
+    }
+
+    .wrong-btn {
+      background: #c0392b;
+    }
+
+    /* Pantalla final */
+    .end-screen {
+      position: absolute;
+      inset: 0;
+      background: transparent;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 1.5s ease;
+      color: #fff;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .end-screen h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .end-screen p {
+      font-size: 20px;
+    }
+
+    #clue {
+      transition: opacity 0.3s ease;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="game">
+    <div class="score">
+      ✔ <span id="ok">0</span> | ✖ <span id="fail">0</span>
+    </div>
+
+    <div class="rosco" id="rosco">
+      <div class="center" id="clue"></div>
+    </div>
+
+    <div class="controls" id="controls">
+      <button class="correct-btn" id="correct">Correcto</button>
+      <button class="wrong-btn" id="wrong">Incorrecto</button>
+    </div>
+
+    <div class="end-screen" id="end">
+      <h1>🎉 ¡Enhorabuena! 🎉</h1>
+      <p id="summary"></p>
+    </div>
+  </div>
+
+  <script>
+    const letters = [
+      "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+      "N", "Ñ", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
+    ];
+
+    const clues = new Map([
+      ["A", "Con la A: definición de ejemplo."],
+      ["B", "Con la B: definición de ejemplo."],
+      ["C", "Con la C: definición de ejemplo."],
+      ["D", "Con la D: definición de ejemplo."],
+      ["E", "Con la E: definición de ejemplo."],
+      ["F", "Con la F: definición de ejemplo."],
+      ["G", "Con la G: definición de ejemplo."],
+      ["H", "Con la H: definición de ejemplo."],
+      ["I", "Con la I: definición de ejemplo."],
+      ["J", "Con la J: definición de ejemplo."],
+      ["K", "Con la K: definición de ejemplo."],
+      ["L", "Con la L: definición de ejemplo."],
+      ["M", "Con la M: definición de ejemplo."],
+      ["N", "Con la N: definición de ejemplo."],
+      ["Ñ", "Con la Ñ: definición de ejemplo."],
+      ["O", "Con la O: definición de ejemplo."],
+      ["P", "Con la P: definición de ejemplo."],
+      ["Q", "Con la Q: definición de ejemplo."],
+      ["R", "Con la R: definición de ejemplo."],
+      ["S", "Con la S: definición de ejemplo."],
+      ["T", "Con la T: definición de ejemplo."],
+      ["U", "Con la U: definición de ejemplo."],
+      ["V", "Con la V: definición de ejemplo."],
+      ["W", "Con la W: definición de ejemplo."],
+      ["X", "Con la X: definición de ejemplo."],
+      ["Y", "Con la Y: definición de ejemplo."],
+      ["Z", "Con la Z: definición de ejemplo."],
+    ]);
+
+    const rosco = document.getElementById("rosco");
+    const clueBox = document.getElementById("clue");
+    const okSpan = document.getElementById("ok");
+    const failSpan = document.getElementById("fail");
+    const endScreen = document.getElementById("end");
+    const summary = document.getElementById("summary");
+    const controls = document.getElementById("controls");
+
+    let current = 0;
+    let ok = 0;
+    let fail = 0;
+
+    const radius = 280;
+    const center = 350;
+    const letterEls = [];
+
+    letters.forEach((l, i) => {
+      const el = document.createElement("div");
+      el.className = "letter";
+      el.textContent = l;
+
+      const angle = (2 * Math.PI / letters.length) * i - Math.PI / 2;
+      el.style.left = center + radius * Math.cos(angle) - 22 + "px";
+      el.style.top = center + radius * Math.sin(angle) - 22 + "px";
+
+      rosco.appendChild(el);
+      letterEls.push(el);
+    });
+
+    function update() {
+      letterEls.forEach(el => el.classList.remove("active"));
+      if (current < letters.length) {
+        letterEls[current].classList.add("active");
+        clueBox.textContent = clues.get(letters[current]);
+      }
+    }
+
+    function finish() {
+      clueBox.style.opacity = "0";
+      Array.from(document.getElementsByClassName("active")).forEach((element) => {
+        element.classList.remove("active");
+      });
+      controls.style.opacity = "0";
+      endScreen.style.display = "flex";
+      summary.textContent = `Aciertos: ${ok} | Fallos: ${fail}`;
+    }
+
+    document.getElementById("correct").onclick = () => {
+      letterEls[current].classList.add("correct");
+      ok++; okSpan.textContent = ok;
+      current++;
+      current === letters.length ? finish() : update();
+    };
+
+    document.getElementById("wrong").onclick = () => {
+      letterEls[current].classList.add("wrong");
+      fail++; failSpan.textContent = fail;
+      current++;
+      current === letters.length ? finish() : update();
+    };
+
+    update();
+  </script>
+</body>
+
+</html>
