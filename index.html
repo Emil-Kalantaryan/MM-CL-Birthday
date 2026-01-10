@@ -4,8 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>Pasa Palabra</title>
     <style>
         * {
@@ -196,16 +195,6 @@
             font-family: monospace;
         }
 
-        .correct-icon::before {
-            content: "✔";
-            color: white;
-        }
-
-        .incorrect-icon::before {
-            content: "✖";
-            color: white;
-        }
-
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -223,9 +212,8 @@
 <body>
     <div class="game">
         <div class="score">
-            &nbsp;<span class="correct-icon"></span>&nbsp;&nbsp;<span
-                id="correct-count">0</span>&nbsp;&nbsp;|&nbsp;&nbsp;<span
-                class="incorrect-icon"></span>&nbsp;&nbsp;<span id="incorrect-count">0</span>&nbsp;
+            &nbsp;✔&nbsp;&nbsp;<span id="correct-count">0</span>&nbsp;&nbsp;|&nbsp;&nbsp;✖&nbsp;&nbsp;<span
+                id="incorrect-count">0</span>&nbsp;
         </div>
         <div class="stopwatch" id="stopwatch">00:00:00</div>
 
