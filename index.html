@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>Pasa Palabra</title>
     <style>
         * {
@@ -41,6 +42,8 @@
             position: absolute;
             padding: 10px 14px;
             border-radius: 10px;
+            display: flex;
+            align-items: center;
             background-color: rgba(0, 0, 0, 0.4);
         }
 
@@ -212,8 +215,16 @@
 <body>
     <div class="game">
         <div class="score">
-            &nbsp;✔&nbsp;&nbsp;<span id="correct-count">0</span>&nbsp;&nbsp;|&nbsp;&nbsp;✖&nbsp;&nbsp;<span
-                id="incorrect-count">0</span>&nbsp;
+            &nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                <path
+                    d="M20.285 6.709a1 1 0 0 0-1.414-1.418L9 15.167l-4.871-4.872a1 1 0 1 0-1.414 1.414l5.578 5.578a1 1 0 0 0 1.414 0l10.578-10.578z" />
+            </svg>
+            &nbsp;&nbsp;<span id="correct-count">0</span>&nbsp;&nbsp;|&nbsp;&nbsp;<svg
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                <path
+                    d="M18.364 5.636a1 1 0 0 0-1.414 0L12 10.586 7.05 5.636a1 1 0 1 0-1.414 1.414L10.586 12l-4.95 4.95a1 1 0 1 0 1.414 1.414L12 13.414l4.95 4.95a1 1 0 0 0 1.414-1.414L13.414 12l4.95-4.95a1 1 0 0 0 0-1.414z" />
+            </svg>
+            &nbsp;&nbsp;<span id="incorrect-count">0</span>&nbsp;
         </div>
         <div class="stopwatch" id="stopwatch">00:00:00</div>
 
