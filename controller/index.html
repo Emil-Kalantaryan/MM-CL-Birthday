@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <title>Controlador Pasa Palabra</title>
+
+    <style>
+        body {
+            gap: 20px;
+            height: 95vh;
+            display: flex;
+            color: #FFFFFF;
+            font-family: Arial;
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+            background-color: #0A2A43;
+        }
+
+        button {
+            width: 400px;
+            border: none;
+            cursor: pointer;
+            font-size: 22px;
+            padding: 20px 40px;
+            border-radius: 12px;
+        }
+
+        .start {
+            color: #000000;
+            background-color: #FFFFFF;
+        }
+
+        .start:hover {
+            background-color: #DADADA;
+        }
+
+        .start:active {
+            background-color: #C2C2C2;
+        }
+
+        .correct {
+            color: #FFFFFF;
+            background-color: #1FA84D;
+        }
+
+        .correct:hover {
+            background-color: #1C9444;
+        }
+
+        .correct:active {
+            background-color: #1B8B40;
+        }
+
+        .incorrect {
+            color: #FFFFFF;
+            background-color: #D54434;
+        }
+
+        .incorrect:hover {
+            background-color: #BB3B2D;
+        }
+
+        .incorrect:active {
+            background-color: #AA3628;
+        }
+
+        .pass {
+            color: #FFFFFF;
+            background-color: #1E80FF;
+        }
+
+        .pass:hover {
+            background-color: #1A6FDF;
+        }
+
+        .pass:active {
+            background-color: #1864C7;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Controlador Pasa Palabra</h1>
+
+    <button class="start" onclick="send('START')"><strong>Iniciar partida</strong></button>
+    <button class="correct" onclick="send('CORRECT')"><strong>Correcto</strong></button>
+    <button class="incorrect" onclick="send('INCORRECT')"><strong>Incorrecto</strong></button>
+    <button class="pass" onclick="send('PASS')"><strong>Pasa Palabra</strong></button>
+
+    <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
+
+    <script>
+        const peer = new Peer();
+        let connection = null;
+
+        peer.on("open", () => {
+            connection = peer.connect("68c26dca-d0ea-4a98-a61d-0ef46e5d8ad8");
+            connection.on("open", () => {
+                console.log("Connection established");
+            });
+        });
+
+        function send(command) {
+            if (connection && connection.open) {
+                connection.send(command);
+            }
+        }
+    </script>
+
+</body>
+
+</html>

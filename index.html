@@ -3,11 +3,10 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>Pasa Palabra 2.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <title>Pasa Palabra</title>
 
     <style>
         * {
@@ -30,7 +29,6 @@
         }
 
         .game {
-            top: -28px;
             width: 700px;
             height: 700px;
             position: relative;
@@ -38,7 +36,7 @@
 
         .score {
             left: 10px;
-            min-width: 104px;
+            width: 140px;
             font-size: 18px;
             color: #FFFFFF;
             position: absolute;
@@ -49,12 +47,25 @@
         }
 
         #player1Score {
-            top: 10px;
+            top: -20px;
         }
 
         #player2Score {
-            top: 10px;
-            left: 590px;
+            top: -20px;
+            left: 564px;
+        }
+
+        .score-icon {
+            top: 5.5px;
+            position: relative;
+        }
+
+        .stopwatch-icon {
+            top: 4px;
+            left: -2px;
+            width: 25px;
+            height: 25px;
+            position: relative;
         }
 
         .active-player {
@@ -62,100 +73,174 @@
         }
 
         .donut {
-            position: absolute;
             inset: 0;
+            opacity: 1;
             display: flex;
-            justify-content: center;
+            position: absolute;
             align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s ease;
         }
 
         .letter {
             width: 44px;
             height: 44px;
-            border-radius: 50%;
-            position: absolute;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            font-size: 20px;
+            transition: 0.3s;
             font-weight: bold;
-            background: #1E80FF;
+            position: absolute;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            background-color: #1E80FF;
         }
 
         .letter.active {
             transform: scale(1.25);
-            box-shadow: 0 0 15px #6fa3ff;
+            box-shadow: 0px 0px 20px #6480FF;
         }
 
         .letter.correct {
-            background: #1FA84D;
+            background-color: #1FA84D;
         }
 
         .letter.incorrect {
-            background: #D54434;
+            background-color: #D54434;
         }
 
         .center {
             width: 60%;
             height: 60%;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, .5);
             display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
             padding: 30px;
             font-size: 20px;
+            border-radius: 50%;
+            text-align: center;
+            align-items: center;
             white-space: pre-line;
+            justify-content: center;
+            transition: opacity 0.3s ease;
+            background-color: rgba(0, 0, 0, 0.5);
         }
 
         .controls {
-            position: absolute;
-            bottom: -30px;
+            gap: 20px;
+            opacity: 0;
             width: 100%;
-            display: none;
+            bottom: -40px;
+            display: flex;
+            position: absolute;
             justify-content: center;
-            gap: 15px;
+            transition: opacity 0.3s ease;
         }
 
         .control-btn {
-            padding: 12px 20px;
-            font-size: 16px;
             border: none;
-            border-radius: 10px;
             cursor: pointer;
-            color: white;
+            font-size: 18px;
+            color: #FFFFFF;
+            padding: 14px 26px;
+            border-radius: 10px;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .control-btn:active {
+            transform: translateY(2px);
         }
 
         .correct-btn {
-            background: #1FA84D;
+            background-color: #1FA84D;
         }
 
         .incorrect-btn {
-            background: #D54434;
+            background-color: #D54434;
         }
 
         .pass-btn {
-            background: #555;
+            background-color: #1E80FF;
         }
 
-        .start {
+        .start-game-btn {
             width: 200px;
             height: 200px;
-            border-radius: 50%;
-            border: 3px solid white;
-            background: transparent;
-            color: white;
-            font-size: 26px;
+            display: flex;
             cursor: pointer;
+            font-size: 28px;
+            color: #FFFFFF;
+            font-weight: bold;
+            border-radius: 50%;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+            border: 3px solid #FFFFFF;
+            background-color: transparent;
         }
 
-        .end {
-            position: absolute;
+        .start-game-btn:hover {
+            color: black;
+            transform: scale(1.05);
+            background-color: white;
+        }
+
+        .start-game-btn:active {
+            transform: scale(0.9);
+        }
+
+        .end-screen {
             inset: 0;
             display: none;
-            justify-content: center;
+            color: #FFFFFF;
+            position: absolute;
             align-items: center;
             flex-direction: column;
+            justify-content: center;
+            background: transparent;
+            animation: fadeIn 1.5s ease;
+        }
+
+        .end-screen h2 {
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+
+        .end-screen pre {
+            font-size: 20px;
+            text-align: center;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+
+        .infinite-rotation {
+            animation: rotation 8s linear infinite;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes rotation {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -163,42 +248,158 @@
 <body>
     <div class="game">
         <div class="score" id="player1Score">
-            <strong id="player1-name"></strong><br>
-            ✔ <span id="p1ok">0</span> ✖ <span id="p1fail">0</span><br>
-            ⏱ <span id="p1time">08:00</span>
+            <strong id="player1Name">Jugador 1</strong>
+            <br>
+            <svg class="score-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                <path d="M20.285 6.709a1 1 0 0 0-1.414-1.418L9 15.167l-4.871-4.872a1 1 0 1 0-1.414 1.414l5.578 5.578a1 1 0 0 0 1.414 0l10.578-10.578z" />
+            </svg>
+            <span id="player1CorrectCounter">0</span>
+            <svg class="score-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                <path d="M18.364 5.636a1 1 0 0 0-1.414 0L12 10.586 7.05 5.636a1 1 0 1 0-1.414 1.414L10.586 12l-4.95 4.95a1 1 0 1 0 1.414 1.414L12 13.414l4.95 4.95a1 1 0 0 0 1.414-1.414L13.414 12l4.95-4.95a1 1 0 0 0 0-1.414z" />
+            </svg>
+            <span id="player1IncorrectCounter">0</span>
+            <br>
+            <svg class="stopwatch-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="32" cy="36" r="22" />
+                <line x1="32" y1="14" x2="32" y2="18" />
+                <line x1="32" y1="54" x2="32" y2="58" />
+                <line x1="10" y1="36" x2="14" y2="36" />
+                <line x1="50" y1="36" x2="54" y2="36" />
+                <line x1="32" y1="36" x2="32" y2="22" />
+            </svg>
+            <span id="player1Time">08:00</span>
         </div>
 
         <div class="score" id="player2Score">
-            <strong id="player2-name"></strong><br>
-            ✔ <span id="p2ok">0</span> ✖ <span id="p2fail">0</span><br>
-            ⏱ <span id="p2time">08:00</span>
+            <strong id="player2Name">Jugador 2</strong>
+            <br>
+            <svg class="score-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                <path d="M20.285 6.709a1 1 0 0 0-1.414-1.418L9 15.167l-4.871-4.872a1 1 0 1 0-1.414 1.414l5.578 5.578a1 1 0 0 0 1.414 0l10.578-10.578z" />
+            </svg>
+            <span id="player2CorrectCounter">0</span>
+            <svg class="score-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                <path d="M18.364 5.636a1 1 0 0 0-1.414 0L12 10.586 7.05 5.636a1 1 0 1 0-1.414 1.414L10.586 12l-4.95 4.95a1 1 0 1 0 1.414 1.414L12 13.414l4.95 4.95a1 1 0 0 0 1.414-1.414L13.414 12l4.95-4.95a1 1 0 0 0 0-1.414z" />
+            </svg>
+            <span id="player2IncorrectCounter">0</span>
+            <br>
+            <svg class="stopwatch-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="32" cy="36" r="22" />
+                <line x1="32" y1="14" x2="32" y2="18" />
+                <line x1="32" y1="54" x2="32" y2="58" />
+                <line x1="10" y1="36" x2="14" y2="36" />
+                <line x1="50" y1="36" x2="54" y2="36" />
+                <line x1="32" y1="36" x2="32" y2="22" />
+            </svg>
+            <span id="player2Time">08:00</span>
         </div>
 
         <div class="donut" id="donut">
             <div class="center" id="center">
-                <button class="start" id="start">INICIAR</button>
+                <button class="start-game-btn" id="start-game-btn">INICIAR<br>PARTIDA</button>
             </div>
         </div>
 
         <div class="controls" id="controls">
-            <button class="control-btn correct-btn" id="btnCorrect">Correcto</button>
-            <button class="control-btn incorrect-btn" id="btnIncorrect">Incorrecto</button>
-            <button class="control-btn pass-btn" id="btnPass">Pasa palabra</button>
+            <button class="control-btn correct-btn" id="correct-btn">Correcto</button>
+            <button class="control-btn incorrect-btn" id="incorrect-btn">Incorrecto</button>
+            <button class="control-btn pass-btn" id="pass-btn">Pasa palabra</button>
         </div>
 
-        <div class="end" id="end">
-            <h2>FIN DEL JUEGO</h2>
+        <div class="end-screen" id="end-screen">
+            <h2>¡ENHORABUENA!</h2>
             <pre id="summary"></pre>
         </div>
-
     </div>
 
     <script>
-        const player1Name = document.getElementById("player1-name");
-        const player2Name = document.getElementById("player2-name");
-
-        const LETTERS = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("");
+        const RADIUS = 280;
+        const CENTER = 350;
         const TOTAL_TIME = 8 * 60;
+        const LETTER_ELEMENTS = [];
+        const LETTERS = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("");
+
+        const donut = document.getElementById("donut");
+        const center = document.getElementById("center");
+        const summary = document.getElementById("summary");
+        const controls = document.getElementById("controls");
+        const endScreen = document.getElementById("end-screen");
+        const player1Name = document.getElementById("player1Name");
+        const player2Name = document.getElementById("player2Name");
+
+        const passBtn = document.getElementById("pass-btn")
+        const correctBtn = document.getElementById("correct-btn");
+        const incorrectBtn = document.getElementById("incorrect-btn");
+        const startGameBtn = document.getElementById("start-game-btn");
+
+        const players = [
+            createPlayer("Carlos"),
+            createPlayer("Martin")
+        ];
+
+        const ui = {
+            player1: { score: player1Score, correct: player1CorrectCounter, incorrect: player1IncorrectCounter, time: player1Time },
+            player2: { score: player2Score, correct: player2CorrectCounter, incorrect: player2IncorrectCounter, time: player2Time }
+        };
+
+        let timerID = null;
+        let activePlayerIndex = 0;
+
+        LETTERS.forEach((letter, position) => {
+            const element = document.createElement("div");
+            element.className = "letter";
+            element.textContent = letter;
+
+            const angle = (2 * Math.PI / LETTERS.length) * position - Math.PI / 2;
+            element.style.left = CENTER + RADIUS * Math.cos(angle) - 22 + "px";
+            element.style.top = CENTER + RADIUS * Math.sin(angle) - 22 + "px";
+
+            donut.appendChild(element);
+            LETTER_ELEMENTS.push(element);
+        });
+
+        startGameBtn.addEventListener("click", () => {
+            setTimeout(() => {
+                startGameBtn.style.opacity = "0";
+            }, 200);
+            setTimeout(() => {
+                startGameBtn.style.display = "none";
+            }, 600);
+            setTimeout(() => {
+                controls.style.opacity = "1";
+                player1Name.textContent = players[0].name;
+                player2Name.textContent = players[1].name;
+                startTimer();
+                render();
+            }, 800);
+        });
+
+        correctBtn.onclick = () => {
+            const player = getActivePlayer();
+            player.correct++;
+            player.state[player.index] = "correct";
+            player.index = findNextPending(player, player.index);
+            render();
+            if (checkIfPlayerFinished(player)) {
+                switchPlayer();
+            }
+        };
+
+        incorrectBtn.onclick = () => {
+            const player = getActivePlayer();
+            player.incorrect++;
+            player.state[player.index] = "incorrect";
+            player.index = findNextPending(player, player.index);
+            render();
+            checkIfPlayerFinished(player);
+            switchPlayer();
+        };
+
+        passBtn.onclick = () => {
+            const player = getActivePlayer();
+            player.index = findNextPending(player, player.index);
+            render();
+            switchPlayer();
+        };
 
         function createClues(name) {
             const clues = {};
@@ -221,88 +422,41 @@
             };
         }
 
-        const players = [
-            createPlayer("Carlos"),
-            createPlayer("Martin")
-        ];
-
-        let activePlayerIndex = 0;
-        let timerId = null;
-
-        const donut = document.getElementById("donut");
-        const center = document.getElementById("center");
-        const controls = document.getElementById("controls");
-        const endScreen = document.getElementById("end");
-        const summary = document.getElementById("summary");
-
-        const ui = {
-            player1: { scoreBox: player1Score, ok: p1ok, fail: p1fail, time: p1time },
-            player2: { scoreBox: player2Score, ok: p2ok, fail: p2fail, time: p2time }
-        };
-
-        const btnCorrect = document.getElementById("btnCorrect");
-        const btnIncorrect = document.getElementById("btnIncorrect");
-        const btnPass = document.getElementById("btnPass");
-
-        const letterElements = [];
-        const RADIUS = 280;
-        const CENTER = 350;
-
-        LETTERS.forEach((letter, i) => {
-            const el = document.createElement("div");
-            el.className = "letter";
-            el.textContent = letter;
-
-            const angle = (2 * Math.PI / LETTERS.length) * i - Math.PI / 2;
-            el.style.left = CENTER + RADIUS * Math.cos(angle) - 22 + "px";
-            el.style.top = CENTER + RADIUS * Math.sin(angle) - 22 + "px";
-
-            donut.appendChild(el);
-            letterElements.push(el);
-        });
-
         function getActivePlayer() {
             return players[activePlayerIndex];
         }
 
         function findNextPending(player, fromIndex) {
             for (let i = 1; i <= LETTERS.length; i++) {
-                const idx = (fromIndex + i) % LETTERS.length;
-                if (player.state[idx] === "pending") return idx;
+                const index = (fromIndex + i) % LETTERS.length;
+                if (player.state[index] === "pending") {
+                    return index;
+                }
             }
             return -1;
         }
 
-        function startGame() {
-            player1Name.textContent = players[0].name;
-            player2Name.textContent = players[1].name;
-            document.getElementById("start").remove();
-            controls.style.display = "flex";
-            startTimer();
-            render();
-        }
-
         function startTimer() {
-            clearInterval(timerId);
+            clearInterval(timerID);
 
-            timerId = setInterval(() => {
+            timerID = setInterval(() => {
                 const player = getActivePlayer();
                 player.time--;
-
+                /*
                 if (player.time <= 0) {
                     player.time = 0;
                     player.done = true;
                     switchPlayer();
                 }
-
+                */
                 renderScore();
             }, 1000);
         }
 
         function switchPlayer() {
-            clearInterval(timerId);
+            clearInterval(timerID);
 
-            if (players.every(p => p.done)) {
+            if (players.every(player => player.done)) {
                 finishGame();
                 return;
             }
@@ -311,10 +465,20 @@
 
             if (getActivePlayer().done) {
                 activePlayerIndex = activePlayerIndex === 0 ? 1 : 0;
+                render();
+                startTimer();
+            } else {
+                setTimeout(() => {
+                    donut.style.opacity = 0;
+                }, 300);
+                setTimeout(() => {
+                    render();
+                    startTimer();
+                }, 600);
+                setTimeout(() => {
+                    donut.style.opacity = 1;
+                }, 900);
             }
-
-            startTimer();
-            render();
         }
 
         function checkIfPlayerFinished(player) {
@@ -328,75 +492,107 @@
         function render() {
             const player = getActivePlayer();
 
-            letterElements.forEach((el, i) => {
-                el.className = "letter";
-                if (player.state[i] === "correct") el.classList.add("correct");
-                if (player.state[i] === "incorrect") el.classList.add("incorrect");
+            LETTER_ELEMENTS.forEach((element, position) => {
+                element.className = "letter";
+                if (player.state[position] === "correct") {
+                    element.classList.add("correct");
+                }
+                if (player.state[position] === "incorrect") {
+                    element.classList.add("incorrect");
+                }
             });
 
             if (!player.done && player.index !== -1) {
-                letterElements[player.index].classList.add("active");
-                center.textContent =
-                    `${player.name}\n\n${player.clues[LETTERS[player.index]]}`;
+                LETTER_ELEMENTS[player.index].classList.add("active");
+                center.textContent = `${player.clues[LETTERS[player.index]]}`;
             }
 
             renderScore();
         }
 
         function renderScore() {
-            players.forEach((player, i) => {
-                const panel = i === 0 ? ui.player1 : ui.player2;
-
-                panel.ok.textContent = player.correct;
-                panel.fail.textContent = player.incorrect;
-                panel.time.textContent =
-                    String(Math.floor(player.time / 60)).padStart(2, "0") + ":" +
-                    String(player.time % 60).padStart(2, "0");
-
-                panel.scoreBox.classList.toggle("active-player", i === activePlayerIndex);
+            players.forEach((player, position) => {
+                const panel = position === 0 ? ui.player1 : ui.player2;
+                panel.correct.textContent = player.correct;
+                panel.incorrect.textContent = player.incorrect;
+                panel.time.textContent = formatTime(player.time)
+                panel.score.classList.toggle("active-player", position === activePlayerIndex);
             });
         }
 
-        btnCorrect.onclick = () => {
-            const player = getActivePlayer();
-            player.state[player.index] = "correct";
-            player.correct++;
-            player.index = findNextPending(player, player.index);
-            render();
-
-            if (checkIfPlayerFinished(player)) switchPlayer();
-        };
-
-        btnIncorrect.onclick = () => {
-            const player = getActivePlayer();
-            player.state[player.index] = "incorrect";
-            player.incorrect++;
-            player.index = findNextPending(player, player.index);
-            render();
-            checkIfPlayerFinished(player);
-            switchPlayer();
-        };
-
-        btnPass.onclick = () => {
-            const player = getActivePlayer();
-            player.index = findNextPending(player, player.index);
-            render();
-            switchPlayer();
-        };
-
         function finishGame() {
-            clearInterval(timerId);
-            controls.style.display = "none";
+            clearInterval(timerID);
+            center.style.opacity = "0";
+            controls.style.opacity = "0";
             endScreen.style.display = "flex";
-
-            summary.textContent = players.map(player => `
-${player.name}
-✔ ${player.correct} ✖ ${player.incorrect}
-Tiempo usado: ${TOTAL_TIME - player.time}s
-`).join("\n");
+            summary.textContent = players.map(player => `${player.name}\nAciertos: ${player.correct}  |  Fallos: ${player.incorrect}\nTiempo restante: ${formatTime(player.time)}`).join("\n\n");
+            Array.from(document.getElementsByClassName("active-player")).forEach((element) => {
+                element.classList.remove("active-player");
+            });
+            donut.classList.add("infinite-rotation");
         }
 
-        start.onclick = startGame;
+        function formatTime(totalSeconds) {
+            const sign = totalSeconds < 0 ? "-" : "";
+            const abs = Math.abs(totalSeconds);
+
+            const minutes = Math.floor(abs / 60);
+            const seconds = abs % 60;
+
+            return `${sign}${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+        }
+    </script>
+
+    <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
+
+    <script>
+        const peer = new Peer("68c26dca-d0ea-4a98-a61d-0ef46e5d8ad8", {
+            debug: 0
+        });
+
+        peer.on("open", id => {
+            console.log("Connection ID:", id);
+        });
+
+        peer.on("connection", connection => {
+            console.log("Connection established");
+            connection.on("data", data => {
+                handleRemoteCommand(data);
+            });
+        });
+
+        function remoteStart() {
+            startGameBtn.click();
+        }
+
+        function remoteCorrect() {
+            correctBtn.click();
+        }
+
+        function remoteIncorrect() {
+            incorrectBtn.click();
+        }
+
+        function remotePass() {
+            passBtn.click();
+        }
+
+        function handleRemoteCommand(command) {
+            switch (command) {
+                case "START":
+                    remoteStart();
+                    break;
+                case "CORRECT":
+                    remoteCorrect();
+                    break;
+                case "INCORRECT":
+                    remoteIncorrect();
+                    break;
+                case "PASS":
+                    remotePass();
+                    break;
+            }
+        }
     </script>
 </body>
 
