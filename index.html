@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -6,7 +7,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>Pasa Palabra</title>
+    <title>Pasa Palabra 2.0</title>
+
     <style>
         * {
             box-sizing: border-box;
@@ -35,365 +37,366 @@
         }
 
         .score {
-            top: 10px;
             left: 10px;
-            font-size: 20px;
+            min-width: 104px;
+            font-size: 18px;
             color: #FFFFFF;
             position: absolute;
             padding: 10px 14px;
             border-radius: 10px;
-            display: flex;
-            align-items: center;
+            border: 3px solid #000000;
             background-color: rgba(0, 0, 0, 0.4);
         }
 
-        .stopwatch {
-            top: 65px;
-            left: 11px;
-            font-size: 20px;
-            position: absolute;
-            padding: 10px 14px;
-            border-radius: 10px;
-            background-color: rgba(0, 0, 0, 0.4);
+        #player1Score {
+            top: 10px;
+        }
+
+        #player2Score {
+            top: 10px;
+            left: 590px;
+        }
+
+        .active-player {
+            border: 3px solid #1E80FF;
         }
 
         .donut {
+            position: absolute;
             inset: 0;
             display: flex;
-            position: absolute;
-            align-items: center;
             justify-content: center;
+            align-items: center;
         }
 
         .letter {
             width: 44px;
             height: 44px;
-            display: flex;
-            font-size: 20px;
-            transition: 0.3s;
-            font-weight: bold;
-            position: absolute;
             border-radius: 50%;
-            align-items: center;
+            position: absolute;
+            display: flex;
             justify-content: center;
-            background-color: #1E80FF;
+            align-items: center;
+            font-weight: bold;
+            background: #1E80FF;
         }
 
         .letter.active {
             transform: scale(1.25);
-            box-shadow: 0px 0px 20px #6480FF;
+            box-shadow: 0 0 15px #6fa3ff;
         }
 
         .letter.correct {
-            background-color: #1FA84D;
+            background: #1FA84D;
         }
 
         .letter.incorrect {
-            background-color: #D54434;
+            background: #D54434;
         }
 
         .center {
             width: 60%;
             height: 60%;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, .5);
             display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
             padding: 30px;
             font-size: 20px;
-            border-radius: 50%;
-            text-align: center;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.3s ease;
-            background-color: rgba(0, 0, 0, 0.5);
+            white-space: pre-line;
         }
 
         .controls {
-            gap: 20px;
-            opacity: 0;
-            width: 100%;
-            bottom: -30px;
-            display: flex;
             position: absolute;
+            bottom: -30px;
+            width: 100%;
+            display: none;
             justify-content: center;
-            transition: opacity 0.3s ease;
+            gap: 15px;
         }
 
         .control-btn {
+            padding: 12px 20px;
+            font-size: 16px;
             border: none;
-            cursor: pointer;
-            font-size: 18px;
-            color: #FFFFFF;
-            padding: 14px 26px;
             border-radius: 10px;
-            transition: transform 0.15s, box-shadow 0.15s;
-        }
-
-        .control-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
-        }
-
-        .control-btn:active {
-            transform: translateY(2px);
+            cursor: pointer;
+            color: white;
         }
 
         .correct-btn {
-            background-color: #1FA84D;
+            background: #1FA84D;
         }
 
         .incorrect-btn {
-            background-color: #D54434;
+            background: #D54434;
         }
 
-        .start-game-btn {
+        .pass-btn {
+            background: #555;
+        }
+
+        .start {
             width: 200px;
             height: 200px;
-            display: flex;
-            cursor: pointer;
-            font-size: 28px;
-            color: #FFFFFF;
-            font-weight: bold;
             border-radius: 50%;
-            text-align: center;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.25s ease;
-            border: 3px solid #FFFFFF;
-            background-color: transparent;
+            border: 3px solid white;
+            background: transparent;
+            color: white;
+            font-size: 26px;
+            cursor: pointer;
         }
 
-        .start-game-btn:hover {
-            color: black;
-            transform: scale(1.05);
-            background-color: white;
-        }
-
-        .start-game-btn:active {
-            transform: scale(0.9);
-        }
-
-        .end-screen {
+        .end {
+            position: absolute;
             inset: 0;
             display: none;
-            color: #FFFFFF;
-            position: absolute;
+            justify-content: center;
             align-items: center;
             flex-direction: column;
-            justify-content: center;
-            background: transparent;
-            animation: fadeIn 1.5s ease;
-        }
-
-        .end-screen p {
-            font-size: 20px;
-        }
-
-        .end-screen h1 {
-            font-size: 32px;
-            margin-bottom: 20px;
-        }
-
-        .summary {
-            text-align: center;
-            white-space: pre-wrap;
-            font-family: monospace;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
         }
     </style>
 </head>
 
 <body>
     <div class="game">
-        <div class="score">
-            &nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
-                <path
-                    d="M20.285 6.709a1 1 0 0 0-1.414-1.418L9 15.167l-4.871-4.872a1 1 0 1 0-1.414 1.414l5.578 5.578a1 1 0 0 0 1.414 0l10.578-10.578z" />
-            </svg>
-            &nbsp;&nbsp;<span id="correct-count">0</span>&nbsp;&nbsp;|&nbsp;&nbsp;<svg
-                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
-                <path
-                    d="M18.364 5.636a1 1 0 0 0-1.414 0L12 10.586 7.05 5.636a1 1 0 1 0-1.414 1.414L10.586 12l-4.95 4.95a1 1 0 1 0 1.414 1.414L12 13.414l4.95 4.95a1 1 0 0 0 1.414-1.414L13.414 12l4.95-4.95a1 1 0 0 0 0-1.414z" />
-            </svg>
-            &nbsp;&nbsp;<span id="incorrect-count">0</span>&nbsp;
+        <div class="score" id="player1Score">
+            <strong id="player1-name"></strong><br>
+            ✔ <span id="p1ok">0</span> ✖ <span id="p1fail">0</span><br>
+            ⏱ <span id="p1time">08:00</span>
         </div>
-        <div class="stopwatch" id="stopwatch">00:00:00</div>
+
+        <div class="score" id="player2Score">
+            <strong id="player2-name"></strong><br>
+            ✔ <span id="p2ok">0</span> ✖ <span id="p2fail">0</span><br>
+            ⏱ <span id="p2time">08:00</span>
+        </div>
 
         <div class="donut" id="donut">
             <div class="center" id="center">
-                <button class="start-game-btn" id="start-game-btn">INICIAR<br>PARTIDA</button>
+                <button class="start" id="start">INICIAR</button>
             </div>
         </div>
 
         <div class="controls" id="controls">
-            <button class="control-btn correct-btn" id="correct-btn">Correcto</button>
-            <button class=" control-btn incorrect-btn" id="incorrect-btn">Incorrecto</button>
+            <button class="control-btn correct-btn" id="btnCorrect">Correcto</button>
+            <button class="control-btn incorrect-btn" id="btnIncorrect">Incorrecto</button>
+            <button class="control-btn pass-btn" id="btnPass">Pasa palabra</button>
         </div>
 
-        <div class="end-screen" id="end-screen">
-            <h1>¡Enhorabuena!</h1>
-            <p class="summary" id="summary"></p>
+        <div class="end" id="end">
+            <h2>FIN DEL JUEGO</h2>
+            <pre id="summary"></pre>
         </div>
+
     </div>
 
     <script>
-        const donut = document.getElementById("donut");
-        const center = document.getElementById("center");
-        const summary = document.getElementById("summary");
-        const controls = document.getElementById("controls");
-        const endScreen = document.getElementById("end-screen");
-        const stopwatch = document.getElementById("stopwatch");
-        const correctCount = document.getElementById("correct-count");
-        const incorrectCount = document.getElementById("incorrect-count");
+        const player1Name = document.getElementById("player1-name");
+        const player2Name = document.getElementById("player2-name");
 
-        const correctBtn = document.getElementById("correct-btn");
-        const incorrectBtn = document.getElementById("incorrect-btn");
-        const startGameBtn = document.getElementById("start-game-btn");
+        const LETTERS = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("");
+        const TOTAL_TIME = 8 * 60;
 
-        const letters = [
-            "A", "B", "C",
-            "D", "E", "F",
-            "G", "H", "I",
-            "J", "K", "L",
-            "M", "N", "Ñ",
-            "O", "P", "Q",
-            "R", "S", "T",
-            "U", "V", "W",
-            "X", "Y", "Z"
-        ];
-
-        const clues = new Map([
-            ["A", "Con la A: definición de ejemplo."],
-            ["B", "Con la B: definición de ejemplo."],
-            ["C", "Con la C: definición de ejemplo."],
-            ["D", "Con la D: definición de ejemplo."],
-            ["E", "Con la E: definición de ejemplo."],
-            ["F", "Con la F: definición de ejemplo."],
-            ["G", "Con la G: definición de ejemplo."],
-            ["H", "Con la H: definición de ejemplo."],
-            ["I", "Con la I: definición de ejemplo."],
-            ["J", "Con la J: definición de ejemplo."],
-            ["K", "Con la K: definición de ejemplo."],
-            ["L", "Con la L: definición de ejemplo."],
-            ["M", "Con la M: definición de ejemplo."],
-            ["N", "Con la N: definición de ejemplo."],
-            ["Ñ", "Con la Ñ: definición de ejemplo."],
-            ["O", "Con la O: definición de ejemplo."],
-            ["P", "Con la P: definición de ejemplo."],
-            ["Q", "Con la Q: definición de ejemplo."],
-            ["R", "Con la R: definición de ejemplo."],
-            ["S", "Con la S: definición de ejemplo."],
-            ["T", "Con la T: definición de ejemplo."],
-            ["U", "Con la U: definición de ejemplo."],
-            ["V", "Con la V: definición de ejemplo."],
-            ["W", "Con la W: definición de ejemplo."],
-            ["X", "Con la X: definición de ejemplo."],
-            ["Y", "Con la Y: definición de ejemplo."],
-            ["Z", "Con la Z: definición de ejemplo."],
-        ]);
-
-        let correct = 0;
-        let incorrect = 0;
-        let current = 0;
-
-        let startTime = null;
-        let intervalTime = null;
-        let elapsedTime = 0;
-
-        const radiusPx = 280;
-        const centerPx = 350;
-        const letterElements = [];
-
-        letters.forEach((letter, position) => {
-            const element = document.createElement("div");
-            element.className = "letter";
-            element.textContent = letter;
-
-            const angle = (2 * Math.PI / letters.length) * position - Math.PI / 2;
-            element.style.left = centerPx + radiusPx * Math.cos(angle) - 22 + "px";
-            element.style.top = centerPx + radiusPx * Math.sin(angle) - 22 + "px";
-
-            donut.appendChild(element);
-            letterElements.push(element);
-        });
-
-        function update() {
-            letterElements.forEach(element => element.classList.remove("active"));
-            if (current < letters.length) {
-                letterElements[current].classList.add("active");
-                center.textContent = clues.get(letters[current]);
-            }
+        function createClues(name) {
+            const clues = {};
+            LETTERS.forEach(letter => {
+                clues[letter] = `Con la ${letter}: definición de ejemplo.`;
+            });
+            return clues;
         }
 
-        function finish() {
-            clearInterval(intervalTime);
-            elapsedTime = Date.now() - startTime;
-            center.style.opacity = "0";
-            controls.style.opacity = "0";
-            endScreen.style.display = "flex";
-            summary.textContent = `Aciertos: ${correct} | Fallos: ${incorrect}\n\nTiempo: ${new Date(elapsedTime).toISOString().substr(11, 8)}`;
-            Array.from(document.getElementsByClassName("active")).forEach((element) => {
-                element.classList.remove("active");
+        function createPlayer(name) {
+            return {
+                name,
+                index: 0,
+                correct: 0,
+                incorrect: 0,
+                time: TOTAL_TIME,
+                done: false,
+                state: Array(LETTERS.length).fill("pending"),
+                clues: createClues(name)
+            };
+        }
+
+        const players = [
+            createPlayer("Carlos"),
+            createPlayer("Martin")
+        ];
+
+        let activePlayerIndex = 0;
+        let timerId = null;
+
+        const donut = document.getElementById("donut");
+        const center = document.getElementById("center");
+        const controls = document.getElementById("controls");
+        const endScreen = document.getElementById("end");
+        const summary = document.getElementById("summary");
+
+        const ui = {
+            player1: { scoreBox: player1Score, ok: p1ok, fail: p1fail, time: p1time },
+            player2: { scoreBox: player2Score, ok: p2ok, fail: p2fail, time: p2time }
+        };
+
+        const btnCorrect = document.getElementById("btnCorrect");
+        const btnIncorrect = document.getElementById("btnIncorrect");
+        const btnPass = document.getElementById("btnPass");
+
+        const letterElements = [];
+        const RADIUS = 280;
+        const CENTER = 350;
+
+        LETTERS.forEach((letter, i) => {
+            const el = document.createElement("div");
+            el.className = "letter";
+            el.textContent = letter;
+
+            const angle = (2 * Math.PI / LETTERS.length) * i - Math.PI / 2;
+            el.style.left = CENTER + RADIUS * Math.cos(angle) - 22 + "px";
+            el.style.top = CENTER + RADIUS * Math.sin(angle) - 22 + "px";
+
+            donut.appendChild(el);
+            letterElements.push(el);
+        });
+
+        function getActivePlayer() {
+            return players[activePlayerIndex];
+        }
+
+        function findNextPending(player, fromIndex) {
+            for (let i = 1; i <= LETTERS.length; i++) {
+                const idx = (fromIndex + i) % LETTERS.length;
+                if (player.state[idx] === "pending") return idx;
+            }
+            return -1;
+        }
+
+        function startGame() {
+            player1Name.textContent = players[0].name;
+            player2Name.textContent = players[1].name;
+            document.getElementById("start").remove();
+            controls.style.display = "flex";
+            startTimer();
+            render();
+        }
+
+        function startTimer() {
+            clearInterval(timerId);
+
+            timerId = setInterval(() => {
+                const player = getActivePlayer();
+                player.time--;
+
+                if (player.time <= 0) {
+                    player.time = 0;
+                    player.done = true;
+                    switchPlayer();
+                }
+
+                renderScore();
+            }, 1000);
+        }
+
+        function switchPlayer() {
+            clearInterval(timerId);
+
+            if (players.every(p => p.done)) {
+                finishGame();
+                return;
+            }
+
+            activePlayerIndex = activePlayerIndex === 0 ? 1 : 0;
+
+            if (getActivePlayer().done) {
+                activePlayerIndex = activePlayerIndex === 0 ? 1 : 0;
+            }
+
+            startTimer();
+            render();
+        }
+
+        function checkIfPlayerFinished(player) {
+            if (!player.done && player.state.every(s => s !== "pending")) {
+                player.done = true;
+                return true;
+            }
+            return false;
+        }
+
+        function render() {
+            const player = getActivePlayer();
+
+            letterElements.forEach((el, i) => {
+                el.className = "letter";
+                if (player.state[i] === "correct") el.classList.add("correct");
+                if (player.state[i] === "incorrect") el.classList.add("incorrect");
+            });
+
+            if (!player.done && player.index !== -1) {
+                letterElements[player.index].classList.add("active");
+                center.textContent =
+                    `${player.name}\n\n${player.clues[LETTERS[player.index]]}`;
+            }
+
+            renderScore();
+        }
+
+        function renderScore() {
+            players.forEach((player, i) => {
+                const panel = i === 0 ? ui.player1 : ui.player2;
+
+                panel.ok.textContent = player.correct;
+                panel.fail.textContent = player.incorrect;
+                panel.time.textContent =
+                    String(Math.floor(player.time / 60)).padStart(2, "0") + ":" +
+                    String(player.time % 60).padStart(2, "0");
+
+                panel.scoreBox.classList.toggle("active-player", i === activePlayerIndex);
             });
         }
 
-        correctBtn.addEventListener("click", () => {
-            letterElements[current].classList.add("correct");
-            current++;
-            correct++;
-            correctCount.textContent = correct;
-            current === letters.length ? finish() : update();
-        });
+        btnCorrect.onclick = () => {
+            const player = getActivePlayer();
+            player.state[player.index] = "correct";
+            player.correct++;
+            player.index = findNextPending(player, player.index);
+            render();
 
-        incorrectBtn.addEventListener("click", () => {
-            letterElements[current].classList.add("incorrect");
-            current++;
-            incorrect++;
-            incorrectCount.textContent = incorrect;
-            current === letters.length ? finish() : update();
-        });
+            if (checkIfPlayerFinished(player)) switchPlayer();
+        };
 
-        startGameBtn.addEventListener("click", () => {
-            setTimeout(() => {
-                startGameBtn.style.opacity = "0";
-            }, 200);
-            setTimeout(() => {
-                startGameBtn.style.display = "none";
-            }, 600);
-            setTimeout(() => {
-                startTime = Date.now();
-                intervalTime = setInterval(() => {
-                    const now = Date.now();
-                    const difference = now - startTime;
-                    showTime(difference);
-                }, 1000);
-                controls.style.opacity = "1";
-                update();
-            }, 1000);
-        });
+        btnIncorrect.onclick = () => {
+            const player = getActivePlayer();
+            player.state[player.index] = "incorrect";
+            player.incorrect++;
+            player.index = findNextPending(player, player.index);
+            render();
+            checkIfPlayerFinished(player);
+            switchPlayer();
+        };
 
-        function showTime(milliseconds) {
-            let seconds = Math.floor(milliseconds / 1000);
-            let minutes = Math.floor(seconds / 60);
-            let hours = Math.floor(minutes / 60);
+        btnPass.onclick = () => {
+            const player = getActivePlayer();
+            player.index = findNextPending(player, player.index);
+            render();
+            switchPlayer();
+        };
 
-            seconds %= 60;
-            minutes %= 60;
+        function finishGame() {
+            clearInterval(timerId);
+            controls.style.display = "none";
+            endScreen.style.display = "flex";
 
-            stopwatch.textContent =
-                `${String(hours).padStart(2, "0")}:` +
-                `${String(minutes).padStart(2, "0")}:` +
-                `${String(seconds).padStart(2, "0")}`;
+            summary.textContent = players.map(player => `
+${player.name}
+✔ ${player.correct} ✖ ${player.incorrect}
+Tiempo usado: ${TOTAL_TIME - player.time}s
+`).join("\n");
         }
+
+        start.onclick = startGame;
     </script>
 </body>
 
