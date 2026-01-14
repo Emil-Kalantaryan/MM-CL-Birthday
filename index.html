@@ -255,7 +255,7 @@
 
 <body>
     <div class="game">
-        <p class="connection-status" id="connection-status">Esperando conexión...</p>
+        <p class="connection-status" id="connection-status">Estableciendo canal</p>
         <div class="score" id="player1Score">
             <strong id="player1Name">Jugador 1</strong>
             <br>
@@ -563,6 +563,7 @@
 
         peer.on("open", id => {
             console.log("Connection ID:", id);
+            connectionStatus.textContent = "Esperando conexión...";
         });
 
         peer.on("connection", connection => {
