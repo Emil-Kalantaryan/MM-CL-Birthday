@@ -221,6 +221,13 @@
             animation: rotation 8s linear infinite;
         }
 
+        .connection-status {
+            top: -20px;
+            left: 278px;
+            font-size: 14px;
+            position: relative;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -247,6 +254,7 @@
 
 <body>
     <div class="game">
+        <p class="connection-status" id="connection-status">Waiting for connection</p>
         <div class="score" id="player1Score">
             <strong id="player1Name">Jugador 1</strong>
             <br>
@@ -331,6 +339,8 @@
         const incorrectBtn = document.getElementById("incorrect-btn");
         const startGameBtn = document.getElementById("start-game-btn");
 
+        const connectionStatus = document.getElementById("connection-status");
+
         const players = [
             createPlayer("Carlos"),
             createPlayer("Martin")
@@ -365,7 +375,7 @@
                 startGameBtn.style.display = "none";
             }, 600);
             setTimeout(() => {
-                controls.style.opacity = "1";
+                // controls.style.opacity = "1";
                 player1Name.textContent = players[0].name;
                 player2Name.textContent = players[1].name;
                 startTimer();
@@ -556,6 +566,7 @@
 
         peer.on("connection", connection => {
             console.log("Connection established");
+            connectionStatus.textContent = "Connection established";
             connection.on("data", data => {
                 handleRemoteCommand(data);
             });

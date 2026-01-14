@@ -5,13 +5,14 @@
     <meta charset="UTF-8" />
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>Controlador Pasa Palabra</title>
 
     <style>
         body {
             gap: 20px;
-            height: 95vh;
+            height: 80vh;
             display: flex;
             color: #FFFFFF;
             font-family: Arial;
@@ -86,7 +87,7 @@
 
 <body>
     <h1>Controlador Pasa Palabra</h1>
-
+    <p class="connection-status" id="connection-status">Connecting...</p>
     <button class="start" onclick="send('START')"><strong>Iniciar partida</strong></button>
     <button class="correct" onclick="send('CORRECT')"><strong>Correcto</strong></button>
     <button class="incorrect" onclick="send('INCORRECT')"><strong>Incorrecto</strong></button>
@@ -95,18 +96,29 @@
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
 
     <script>
+        const connectionStatus = document.getElementById("connection-status");
+
         const peer = new Peer();
         let connection = null;
+        let started = false;
 
         peer.on("open", () => {
             connection = peer.connect("68c26dca-d0ea-4a98-a61d-0ef46e5d8ad8");
             connection.on("open", () => {
                 console.log("Connection established");
+                connectionStatus.textContent = "Connection established";
             });
         });
 
         function send(command) {
             if (connection && connection.open) {
+                if (command === "START") {
+                    if (!started) {
+                        started = true;
+                    } else {
+                        return;
+                    }
+                }
                 connection.send(command);
             }
         }
