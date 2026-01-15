@@ -369,55 +369,91 @@
         });
 
         startGameBtn.addEventListener("click", () => {
-            setTimeout(() => {
-                startGameBtn.style.opacity = "0";
-            }, 200);
-            setTimeout(() => {
-                startGameBtn.style.display = "none";
-            }, 600);
-            setTimeout(() => {
-                // controls.style.opacity = "1";
-                player1Name.textContent = players[0].name;
-                player2Name.textContent = players[1].name;
-                startTimer();
-                render();
-            }, 800);
+            start();
         });
 
         correctBtn.onclick = () => {
-            const player = getActivePlayer();
-            player.correct++;
-            player.state[player.index] = "correct";
-            player.index = findNextPending(player, player.index);
-            render();
-            if (checkIfPlayerFinished(player)) {
-                switchPlayer();
-            }
+            correct();
         };
 
         incorrectBtn.onclick = () => {
-            const player = getActivePlayer();
-            player.incorrect++;
-            player.state[player.index] = "incorrect";
-            player.index = findNextPending(player, player.index);
-            render();
-            checkIfPlayerFinished(player);
-            switchPlayer();
+            incorrect();
         };
 
         passBtn.onclick = () => {
-            const player = getActivePlayer();
-            player.index = findNextPending(player, player.index);
-            render();
-            switchPlayer();
+            pass();
         };
 
         function createClues(name) {
-            const clues = {};
-            LETTERS.forEach(letter => {
-                clues[letter] = `Con la ${letter}: definición de ejemplo.`;
-            });
-            return clues;
+            const placeholderClues = {};
+            const player1Clues = new Map([
+                ["A", "Con la A: Segundo nombre tan bueno que, objetivamente, el resto juega en otra liga."],
+                ["B", "Con la B: Tan inofensivo era el certificado que solo un sistema se dio cuenta de él. Demasiado."],
+                ["C", "Con la C: definición de ejemplo."],
+                ["D", "Con la D: Es el mismo juego que el teto, pero sin fin."],
+                ["E", "Con la E: definición de ejemplo."],
+                ["F", "Con la F: definición de ejemplo."],
+                ["G", "Con la G: Personaje de La Rueda del Tiempo, medio hermano de Gawyn y Elayne."],
+                ["H", "Contiene la H: Héroe legendario del Mundodisco, parodia y homenaje de Conan el Bárbaro."],
+                ["I", "Con la I: Coloquialmente, el apodo con el que has bendecido a Elena Subias."],
+                ["J", "Con la J: Cris es tu..."],
+                ["K", "Contiene la K: Proyecto actual donde discutes mucho con Jose, dedicas muchas horas y nuestro jefe nos obliga a utilizar a partir del 1 de enero."],
+                ["L", "Contiene la L: Tu grupo favorito."],
+                ["M", "Con la M: definición de ejemplo."],
+                ["N", "Con la N: definición de ejemplo."],
+                ["Ñ", "Con la Ñ: definición de ejemplo."],
+                ["O", "Con la O: definición de ejemplo."],
+                ["P", "Con la P: ¿Qué aspecto físico dirías que destaca más de ti? Iba a decir otra cosa, pero como no la he visto... es algo que tienes en la cabeza."],
+                ["Q", "Con la Q: Si en el comité hay un conflicto y no se logra un acuerdo, ¿qué trámite entra en acción?"],
+                ["R", "Con la R: definición de ejemplo."],
+                ["S", "Con la S: definición de ejemplo."],
+                ["T", "Con la T: definición de ejemplo."],
+                ["U", "Con la U: definición de ejemplo."],
+                ["V", "Con la V: definición de ejemplo."],
+                ["W", "Con la W: definición de ejemplo."],
+                ["X", "Con la X: definición de ejemplo."],
+                ["Y", "Con la Y: definición de ejemplo."],
+                ["Z", "Con la Z: definición de ejemplo."],
+            ]);
+            const player2Clues = new Map([
+                ["A", "Con la A: Empresa tan maravillosa que, bajo ningún concepto, existe un plan de cambiarla antes del 31 de enero."],
+                ["B", "Contiene la B: Forma parte del equipo TIC, ronda el medio siglo como tú, ojos azules hipnóticos y, desde mi objetivísimo punto de vista... peligrosamente sexy."],
+                ["C", "Con la C: Zumbado con el que montaste un ciber antes de que Emil ni tan si quiera fuera una vaga idea en la mente de sus padres."],
+                ["D", "Con la D: definición de ejemplo."],
+                ["E", "Con la E: definición de ejemplo."],
+                ["F", "Con la F: definición de ejemplo."],
+                ["G", "Con la G: Mago legendario de “El Señor de los Anillos”, conocido como “el Gris” y miembro de la Comunidad del Anillo."],
+                ["H", "Con la H: Arte mágico de la saga “Nacidos de la Bruma” que permite robar y transferir habilidades mediante clavos metálicos."],
+                ["I", "Contiene la I: Nombre completo de tu técnica favorita que emprendió un nuevo camino en abril del 2025."],
+                ["J", "Con la J: Nombre completo del miembro de tu equipo que se incorporó en diciembre del 2016."],
+                ["K", "Con la K: Tejido de altísima resistencia usado como refuerzo en palas de padel y otros elementos, aportando gran rigidez."],
+                ["L", "Con la L: Proyecto que empezó Vanesa, acabó Laura, impactó a Oriol y a Santo Cristo y aun sigue con nosotros como puerta de entrada a nuestros cursos."],
+                ["M", "Con la M: definición de ejemplo."],
+                ["N", "Con la N: definición de ejemplo."],
+                ["Ñ", "NO contiene la Ñ: Tu juego de mesa preferido donde no se conoce el miedo"],
+                ["O", "Contiene la O: Juego de mesa de los años 80 donde un bárbaro, un enano, un elfo y un mago, intentan derrotar al malvado Zargon en un conjunto de mazmorras."],
+                ["P", "Con la P: Cuál es el deporte considerado de personas mayores y que ahora está de moda."],
+                ["Q", "Contiene la Q: Con qué herramienta te diste en la cabeza practicando tu deporte favorito de personas mayores, probablemente gracias a tu competitividad."],
+                ["R", "Con la R: definición de ejemplo."],
+                ["S", "Con la S: Compañero de pádel de Martín mu malo."],
+                ["T", "Con la T: definición de ejemplo."],
+                ["U", "Con la U: definición de ejemplo."],
+                ["V", "Con la V: definición de ejemplo."],
+                ["W", "Con la W: definición de ejemplo."],
+                ["X", "Con la X: definición de ejemplo."],
+                ["Y", "Con la Y: definición de ejemplo."],
+                ["Z", "Con la Z: definición de ejemplo."],
+            ]);
+            if (name === "Carlos") {
+                return player1Clues;
+            } else if (name === "Martin") {
+                return player2Clues;
+            } else {
+                LETTERS.forEach(letter => {
+                    placeholderClues[letter] = `Con la ${letter}: definición de ejemplo.`;
+                });
+                return placeholderClues;
+            }
         }
 
         function createPlayer(name) {
@@ -431,6 +467,50 @@
                 state: Array(LETTERS.length).fill("pending"),
                 clues: createClues(name)
             };
+        }
+
+        function start() {
+            setTimeout(() => {
+                startGameBtn.style.opacity = "0";
+            }, 200);
+            setTimeout(() => {
+                startGameBtn.style.display = "none";
+            }, 600);
+            setTimeout(() => {
+                // controls.style.opacity = "1";
+                player1Name.textContent = players[0].name;
+                player2Name.textContent = players[1].name;
+                startTimer();
+                render();
+            }, 800);
+        }
+
+        function correct() {
+            const player = getActivePlayer();
+            player.correct++;
+            player.state[player.index] = "correct";
+            player.index = findNextPending(player, player.index);
+            render();
+            if (checkIfPlayerFinished(player)) {
+                switchPlayer();
+            }
+        }
+
+        function incorrect() {
+            const player = getActivePlayer();
+            player.incorrect++;
+            player.state[player.index] = "incorrect";
+            player.index = findNextPending(player, player.index);
+            render();
+            checkIfPlayerFinished(player);
+            switchPlayer();
+        }
+
+        function pass() {
+            const player = getActivePlayer();
+            player.index = findNextPending(player, player.index);
+            render();
+            switchPlayer();
         }
 
         function getActivePlayer() {
@@ -575,19 +655,19 @@
         });
 
         function remoteStart() {
-            startGameBtn.click();
+            start();
         }
 
         function remoteCorrect() {
-            correctBtn.click();
+            correct();
         }
 
         function remoteIncorrect() {
-            incorrectBtn.click();
+            incorrect();
         }
 
         function remotePass() {
-            passBtn.click();
+            pass();
         }
 
         function handleRemoteCommand(command) {
