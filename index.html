@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 
 <head>
     <meta charset="UTF-8" />
@@ -114,7 +114,8 @@
             height: 60%;
             display: flex;
             padding: 30px;
-            font-size: 20px;
+            font-size: 22px;
+            font-weight: bold;
             border-radius: 50%;
             text-align: center;
             align-items: center;
@@ -164,6 +165,11 @@
 
         .pass-btn {
             background-color: #1E80FF;
+        }
+
+        .continue-btn {
+            color: #000000;
+            background-color: #FFFFFF;
         }
 
         .start-game-btn {
@@ -218,13 +224,21 @@
         }
 
         .infinite-rotation {
-            animation: rotation 8s linear infinite;
+            animation: rotation 10s linear infinite;
         }
 
-        .connection-status {
+        .connection-status-in {
             top: -20px;
-            left: 280px;
-            width: 150px;
+            left: 180px;
+            width: 180px;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .connection-status-out {
+            top: -50px;
+            left: 356px;
+            width: 180px;
             font-size: 14px;
             position: relative;
         }
@@ -255,7 +269,8 @@
 
 <body>
     <div class="game">
-        <p class="connection-status" id="connection-status">&nbsp;Estableciendo canal...</p>
+        <p class="connection-status-in" id="connection-status-in">&nbsp;IN: Estableciendo canal...</p>
+        <p class="connection-status-out" id="connection-status-out">&nbsp;OUT: En espera de entrada</p>
         <div class="score" id="player1Score">
             <strong id="player1Name">Jugador 1</strong>
             <br>
@@ -276,7 +291,7 @@
                 <line x1="50" y1="36" x2="54" y2="36" />
                 <line x1="32" y1="36" x2="32" y2="22" />
             </svg>
-            <span id="player1Time">08:00</span>
+            <span id="player1Time">06:00</span>
         </div>
 
         <div class="score" id="player2Score">
@@ -299,19 +314,20 @@
                 <line x1="50" y1="36" x2="54" y2="36" />
                 <line x1="32" y1="36" x2="32" y2="22" />
             </svg>
-            <span id="player2Time">08:00</span>
+            <span id="player2Time">06:00</span>
         </div>
 
         <div class="donut" id="donut">
             <div class="center" id="center">
-                <button class="start-game-btn" id="start-game-btn">INICIAR<br>PARTIDA</button>
+                <button class="start-game-btn" id="start-game-btn" disabled>INICIAR<br>PARTIDA</button>
             </div>
         </div>
 
         <div class="controls" id="controls">
-            <button class="control-btn correct-btn" id="correct-btn" disabled>Correcto</button>
-            <button class="control-btn incorrect-btn" id="incorrect-btn" disabled>Incorrecto</button>
-            <button class="control-btn pass-btn" id="pass-btn" disabled>Pasa palabra</button>
+            <button class="control-btn correct-btn" id="correct-btn">Correcto</button>
+            <button class="control-btn incorrect-btn" id="incorrect-btn">Incorrecto</button>
+            <button class="control-btn pass-btn" id="pass-btn">Pasa palabra</button>
+            <button class="control-btn continue-btn" id="continue-btn">Continuar</button>
         </div>
 
         <div class="end-screen" id="end-screen">
@@ -323,7 +339,7 @@
     <script>
         const RADIUS = 280;
         const CENTER = 350;
-        const TOTAL_TIME = 8 * 60;
+        const TOTAL_TIME = 6 * 60;
         const LETTER_ELEMENTS = [];
         const LETTERS = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("");
 
@@ -337,10 +353,14 @@
 
         const passBtn = document.getElementById("pass-btn")
         const correctBtn = document.getElementById("correct-btn");
+        const continueBtn = document.getElementById("continue-btn");
         const incorrectBtn = document.getElementById("incorrect-btn");
         const startGameBtn = document.getElementById("start-game-btn");
 
-        const connectionStatus = document.getElementById("connection-status");
+        const connectionStatusIN = document.getElementById("connection-status-in");
+        const connectionStatusOUT = document.getElementById("connection-status-out");
+
+        const continueEvent = new EventTarget();
 
         const players = [
             createPlayer("Carlos"),
@@ -353,7 +373,9 @@
         };
 
         let timerID = null;
+        let finished = false;
         let activePlayerIndex = 0;
+        let actionsEnabled = true;
 
         LETTERS.forEach((letter, position) => {
             const element = document.createElement("div");
@@ -368,9 +390,9 @@
             LETTER_ELEMENTS.push(element);
         });
 
-        startGameBtn.addEventListener("click", () => {
+        startGameBtn.onclick = () => {
             start();
-        });
+        };
 
         correctBtn.onclick = () => {
             correct();
@@ -384,44 +406,48 @@
             pass();
         };
 
+        continueBtn.onclick = () => {
+            continueGame();
+        }
+
         function createClues(name) {
             const placeholderClues = {};
             const player1Clues = {
                 "A": "Con la A: Segundo nombre tan bueno que, objetivamente, el resto juega en otra liga.",
                 "B": "Con la B: Tan inofensivo era el certificado que solo un sistema se dio cuenta de él. Demasiado.",
-                "C": "Con la C: definición de ejemplo.",
+                "C": "Con la C: Marca de tabaco con la que te fastidias los pulmones, pero solo en ocasiones especiales.",
                 "D": "Con la D: Es el mismo juego que el teto, pero sin fin.",
-                "E": "Con la E: definición de ejemplo.",
-                "F": "Con la F: definición de ejemplo.",
+                "E": "Con la E: Medio de comunicación/herramienta que utilizas para hacernos llegar las comunicaciones del comité.",
+                "F": "Con la F: Cual es tu postura cuando en un debate no quieres dar la razón ni aunque te paguen.",
                 "G": "Con la G: Personaje de La Rueda del Tiempo, medio hermano de Gawyn y Elayne.",
                 "H": "Contiene la H: Héroe legendario del Mundodisco, parodia y homenaje de Conan el Bárbaro.",
                 "I": "Con la I: Coloquialmente, el apodo con el que has bendecido a Elena Subias.",
                 "J": "Con la J: Cris es tu...",
-                "K": "Contiene la K: Proyecto actual donde discutes mucho con Jose, dedicas muchas horas y nuestro jefe nos obliga a utilizar a partir del 1 de enero.",
+                "K": "Contiene la K: Palabra que se dice cuando, tras 3 debates, 2 cafés, 1 discusión absurda y 24 commits, Carlos vuelve a tener razón y Jose dice “vale”, y el programa de presupuestos, expedientes, pedidos y facturas sigue vivo.",
                 "L": "Contiene la L: Tu grupo favorito.",
                 "M": "Con la M: definición de ejemplo.",
                 "N": "Con la N: definición de ejemplo.",
-                "Ñ": "Con la Ñ: definición de ejemplo.",
-                "O": "Con la O: definición de ejemplo.",
+                "Ñ": "Contiene la Ñ: Apellido del director cincuentón más atractivo de IL3.",
+                "O": "Contiene la O: Mes en el que cumple años Eric.",
                 "P": "Con la P: ¿Qué aspecto físico dirías que destaca más de ti? Iba a decir otra cosa, pero como no la he visto... es algo que tienes en la cabeza.",
                 "Q": "Con la Q: Si en el comité hay un conflicto y no se logra un acuerdo, ¿qué trámite entra en acción?",
                 "R": "Con la R: definición de ejemplo.",
                 "S": "Con la S: definición de ejemplo.",
-                "T": "Con la T: definición de ejemplo.",
-                "U": "Con la U: definición de ejemplo.",
-                "V": "Con la V: definición de ejemplo.",
-                "W": "Con la W: definición de ejemplo.",
+                "T": "Con la T: Forma de viajar instantáneamente sin coche, sin tráfico y sin saber si llegas con todas tus moléculas.",
+                "U": "Con la U: Lugar enorme donde las naves espaciales no usan intermitentes, los Jedi se pierden sin GPS y todo explota tarde o temprano.",
+                "V": "Con la V: Grupo de danza y música español, formado por siete hermanos que revolucionaron el flamenco fusión y coincidente con el apellido de un compañero de trabajo.",
+                "W": "Con la W: Completa la frase de una popular pelicula española. Me debes 3000 pesetas de...",
                 "X": "Con la X: definición de ejemplo.",
-                "Y": "Con la Y: definición de ejemplo.",
-                "Z": "Con la Z: definición de ejemplo."
+                "Y": "Con la Y: Algo que da mal rollo o miedo.",
+                "Z": "Contiene la Z: Espacio musical epicentro de algunos de los acontecimientos musicales más relevantes de Barcelona situado en el Poblenou y que seguro que has ido muchas veces."
             };
             const player2Clues = {
                 "A": "Con la A: Empresa tan maravillosa que, bajo ningún concepto, existe un plan de cambiarla antes del 31 de enero.",
                 "B": "Contiene la B: Forma parte del equipo TIC, ronda el medio siglo como tú, ojos azules hipnóticos y, desde mi objetivísimo punto de vista... peligrosamente sexy.",
                 "C": "Con la C: Zumbado con el que montaste un ciber antes de que Emil ni tan si quiera fuera una vaga idea en la mente de sus padres.",
-                "D": "Con la D: definición de ejemplo.",
-                "E": "Con la E: definición de ejemplo.",
-                "F": "Con la F: definición de ejemplo.",
+                "D": "Con la D: Clásico juego de rol de mesa, publicado por primera vez en los años 70, con ambientación de fantasía.",
+                "E": "Con la E: Grito que aparece tras horas de discutir sobre presupuestos, expedientes, pedidos y facturas, justo cuando Carlos tenía razón, Jose se la da, y el programa por fin funciona después de dos años.",
+                "F": "Con la F: La emoción que sientes al ver a tu hija cada día.",
                 "G": "Con la G: Mago legendario de “El Señor de los Anillos”, conocido como “el Gris” y miembro de la Comunidad del Anillo.",
                 "H": "Con la H: Arte mágico de la saga “Nacidos de la Bruma” que permite robar y transferir habilidades mediante clavos metálicos.",
                 "I": "Contiene la I: Nombre completo de tu técnica favorita que emprendió un nuevo camino en abril del 2025.",
@@ -430,19 +456,19 @@
                 "L": "Con la L: Proyecto que empezó Vanesa, acabó Laura, impactó a Oriol y a Santo Cristo y aun sigue con nosotros como puerta de entrada a nuestros cursos.",
                 "M": "Con la M: definición de ejemplo.",
                 "N": "Con la N: definición de ejemplo.",
-                "Ñ": "NO contiene la Ñ: Tu juego de mesa preferido donde no se conoce el miedo",
+                "Ñ": "NO contiene la Ñ: Tu juego de mesa preferido donde no se conoce el miedo.",
                 "O": "Contiene la O: Juego de mesa de los años 80 donde un bárbaro, un enano, un elfo y un mago, intentan derrotar al malvado Zargon en un conjunto de mazmorras.",
                 "P": "Con la P: Cuál es el deporte considerado de personas mayores y que ahora está de moda.",
                 "Q": "Contiene la Q: Con qué herramienta te diste en la cabeza practicando tu deporte favorito de personas mayores, probablemente gracias a tu competitividad.",
                 "R": "Con la R: definición de ejemplo.",
                 "S": "Con la S: Compañero de pádel de Martín mu malo.",
-                "T": "Con la T: definición de ejemplo.",
-                "U": "Con la U: definición de ejemplo.",
-                "V": "Con la V: definición de ejemplo.",
-                "W": "Con la W: definición de ejemplo.",
-                "X": "Con la X: definición de ejemplo.",
-                "Y": "Con la Y: definición de ejemplo.",
-                "Z": "Con la Z: definición de ejemplo."
+                "T": "Con la T: Algo que te gusta mucho ordenar a tus empleados.",
+                "U": "Con la U: Lugar donde estudiabas cuando todavía tenías pelo.",
+                "V": "Con la V: Nombre de persona claramente reventado de la cabeza con el que trabajaste hace tiempo.",
+                "W": "Con la W: Nombre de centro comercial donde Rubén te puede acompañar en coche siempre que quieras.",
+                "X": "Contiene la X: Proceso para determinar el valor de una incógnita en una ecuación matemática utilizando el resto de valores presentes en la misma.",
+                "Y": "Con la Y: Apellido de excompañera de trabajo apreciada por todos y que está muy concienciada e implicada con el medio ambiente y el cambio climático.",
+                "Z": "Contiene la Z: Apellido de uno de los integrantes más jóvenes de tu equipo."
             };
             if (name === "Carlos") {
                 return player1Clues;
@@ -470,6 +496,7 @@
         }
 
         function start() {
+            send("Partida iniciada");
             setTimeout(() => {
                 startGameBtn.style.opacity = "0";
             }, 200);
@@ -477,7 +504,7 @@
                 startGameBtn.style.display = "none";
             }, 600);
             setTimeout(() => {
-                // controls.style.opacity = "1";
+                controls.style.opacity = "1";
                 player1Name.textContent = players[0].name;
                 player2Name.textContent = players[1].name;
                 startTimer();
@@ -486,6 +513,9 @@
         }
 
         function correct() {
+            if (!actionsEnabled && !finished) {
+                return;
+            }
             const player = getActivePlayer();
             player.correct++;
             player.state[player.index] = "correct";
@@ -497,6 +527,9 @@
         }
 
         function incorrect() {
+            if (!actionsEnabled && !finished) {
+                return;
+            }
             const player = getActivePlayer();
             player.incorrect++;
             player.state[player.index] = "incorrect";
@@ -507,10 +540,17 @@
         }
 
         function pass() {
+            if (!actionsEnabled && !finished) {
+                return;
+            }
             const player = getActivePlayer();
             player.index = findNextPending(player, player.index);
             render();
             switchPlayer();
+        }
+
+        function continueGame() {
+            continueEvent.dispatchEvent(new Event("wake-up"));
         }
 
         function getActivePlayer() {
@@ -544,7 +584,7 @@
             }, 1000);
         }
 
-        function switchPlayer() {
+        async function switchPlayer() {
             clearInterval(timerID);
 
             if (players.every(player => player.done)) {
@@ -559,12 +599,22 @@
                 render();
                 startTimer();
             } else {
+                await new Promise(resolve => {
+                    actionsEnabled = false;
+                    center.style.fontSize = "26px"
+                    center.textContent = "CAMBIO DE TURNO"
+                    continueEvent.addEventListener("wake-up", resolve, { once: true });
+                    send("En espera para cambio de turno");
+                });
+                actionsEnabled = true;
+                send("Cambio de turno ejecutado");
                 setTimeout(() => {
                     donut.style.opacity = 0;
                 }, 300);
                 setTimeout(() => {
                     render();
                     startTimer();
+                    center.style.fontSize = "22px"
                 }, 600);
                 setTimeout(() => {
                     donut.style.opacity = 1;
@@ -595,20 +645,26 @@
 
             if (!player.done && player.index !== -1) {
                 LETTER_ELEMENTS[player.index].classList.add("active");
-                center.textContent = `${player.clues[LETTERS[player.index]]}`;
+                let clue = `${player.clues[LETTERS[player.index]]}`
+                center.textContent = clue;
+                // send(player.name + " - " + clue);
+                send("CLUE," + player.name + "," + LETTERS[player.index]);
             }
 
             renderScore();
         }
 
         function renderScore() {
+            let scoreForController = "";
             players.forEach((player, position) => {
                 const panel = position === 0 ? ui.player1 : ui.player2;
                 panel.correct.textContent = player.correct;
                 panel.incorrect.textContent = player.incorrect;
-                panel.time.textContent = formatTime(player.time)
+                panel.time.textContent = formatTime(player.time);
                 panel.score.classList.toggle("active-player", position === activePlayerIndex);
+                scoreForController += player.name + " | Correct: " + player.correct + " | Incorrect: " + player.incorrect + " | Timer: " + formatTime(player.time) + ",";
             });
+            send("SCORE," + scoreForController);
         }
 
         function finishGame() {
@@ -621,6 +677,8 @@
                 element.classList.remove("active-player");
             });
             donut.classList.add("infinite-rotation");
+            send("Partida finalizada");
+            finished = true;
         }
 
         function formatTime(totalSeconds) {
@@ -637,20 +695,34 @@
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
 
     <script>
-        const peer = new Peer("68c26dca-d0ea-4a98-a61d-0ef46e5d8ad8", {
+        let connectionOUT = null;
+
+        const peerIN = new Peer("68c26dca-d0ea-4a98-a61d-0ef46e5d8ad8", {
             debug: 0
         });
 
-        peer.on("open", id => {
-            console.log("Connection ID:", id);
-            connectionStatus.textContent = "Esperando conexión...";
+        peerIN.on("open", id => {
+            console.log("Connection ID:", id, "(IN)");
+            connectionStatusIN.textContent = "IN: Esperando conexión...";
         });
 
-        peer.on("connection", connection => {
-            console.log("Connection established");
-            connectionStatus.textContent = "Conexión establecida";
+        peerIN.on("connection", connection => {
+            console.log("IN: Connection established");
+            connectionStatusIN.textContent = "IN: Conexión establecida";
+            connectionStatusOUT.textContent = "OUT: Conectando...";
+
             connection.on("data", data => {
                 handleRemoteCommand(data);
+            });
+
+            const peerOUT = new Peer();
+            peerOUT.on("open", () => {
+                connectionOUT = peerOUT.connect("898998c9-d56f-411c-a962-2d83af0a1006");
+                connectionOUT.on("open", () => {
+                    console.log("OUT: Connection established");
+                    connectionStatusOUT.textContent = "OUT: Conexión establecida";
+                    startGameBtn.disabled = false;
+                });
             });
         });
 
@@ -670,6 +742,10 @@
             pass();
         }
 
+        function remoteContinue() {
+            continueGame();
+        }
+
         function handleRemoteCommand(command) {
             switch (command) {
                 case "START":
@@ -684,6 +760,15 @@
                 case "PASS":
                     remotePass();
                     break;
+                case "CONTINUE":
+                    remoteContinue();
+                    break;
+            }
+        }
+
+        function send(command) {
+            if (connectionOUT && connectionOUT.open && !finished) {
+                connectionOUT.send(command);
             }
         }
     </script>
