@@ -163,8 +163,15 @@
             background-color: #D54434;
         }
 
-        .pass-btn {
+        .pass-btn, .gift-btn {
             background-color: #1E80FF;
+        }
+
+        .gift-btn {
+            opacity: 0;
+            font-size: 20px;
+            margin-top: 20px;
+            transition: transform 0.15s, box-shadow 0.15s, opacity 0.5s ease-in;
         }
 
         .continue-btn {
@@ -333,6 +340,7 @@
         <div class="end-screen" id="end-screen">
             <h2>¡ENHORABUENA!</h2>
             <pre id="summary"></pre>
+            <button class="control-btn gift-btn" id="gift-btn"><strong>Desbloquear regalo</strong></button>
         </div>
     </div>
 
@@ -351,7 +359,8 @@
         const player1Name = document.getElementById("player1Name");
         const player2Name = document.getElementById("player2Name");
 
-        const passBtn = document.getElementById("pass-btn")
+        const passBtn = document.getElementById("pass-btn");
+        const giftBtn = document.getElementById("gift-btn");
         const correctBtn = document.getElementById("correct-btn");
         const continueBtn = document.getElementById("continue-btn");
         const incorrectBtn = document.getElementById("incorrect-btn");
@@ -408,6 +417,10 @@
 
         continueBtn.onclick = () => {
             continueGame();
+        }
+
+        giftBtn.onclick = () => {
+            window.location.href = "./gift";
         }
 
         function createClues(name) {
@@ -682,14 +695,48 @@
             center.style.opacity = "0";
             controls.style.opacity = "0";
             endScreen.style.display = "flex";
+            const winner = getWinner();
+            let winnerText = "";
+            if (winner === "PLAYER_1") {
+                winnerText = "Ganador: " + players[0].name;
+                players[0].name = players[0].name + " (Ganador)";
+            } else if (winner === "PLAYER_2") {
+                winnerText = "Ganador: " + players[1].name;
+                players[1].name = players[1].name + " (Ganador)";
+            } else if (winner === "TIE") {
+                winnerText = "Resultado: Empate";
+                players[0].name = players[0].name + " (Empate)";
+                players[1].name = players[1].name + " (Empate)";
+            }
             summary.textContent = players.map(player => `${player.name}\nAciertos: ${player.correct}  |  Fallos: ${player.incorrect}\nTiempo restante: ${formatTime(player.time)}`).join("\n\n");
             Array.from(document.getElementsByClassName("active-player")).forEach((element) => {
                 element.classList.remove("active-player");
             });
             donut.classList.add("infinite-rotation");
-            send("Partida finalizada");
+            send("Partida finalizada | " + winnerText);
             actionsEnabled = false;
             finished = true;
+            setTimeout(() => {
+                giftBtn.style.opacity = "1";
+            }, 2000);
+        }
+
+        function getWinner() {
+            const player1 = players[0];
+            const player2 = players[1];
+            if (player1.correct > player2.correct) {
+                return "PLAYER_1";
+            } else if (player1.correct < player2.correct) {
+                return "PLAYER_2";
+            } else if (player1.correct === player2.correct) {
+                if (player1.time > player2.time) {
+                    return "PLAYER_1";
+                } else if (player1.time < player2.time) {
+                    return "PLAYER_2";
+                } else if (player1.time === player2.time) {
+                    return "TIE";
+                }
+            }
         }
 
         function formatTime(totalSeconds) {

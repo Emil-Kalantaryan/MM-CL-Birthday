@@ -230,7 +230,12 @@
         });
 
         function handleRemoteCommand(command) {
-            if (command === "Partida finalizada") {
+            if (command === "Partida iniciada") {
+                if (!started) {
+                    started = true;
+                }
+            }
+            if (command.startsWith("Partida finalizada")) {
                 if (!finished) {
                     finished = true;
                 } else {
