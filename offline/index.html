@@ -269,8 +269,6 @@
 
 <body>
     <div class="game">
-        <p class="connection-status-in" id="connection-status-in">&nbsp;IN: Estableciendo canal...</p>
-        <p class="connection-status-out" id="connection-status-out">&nbsp;OUT: En espera de entrada</p>
         <div class="score" id="player1Score">
             <strong id="player1Name">Jugador 1</strong>
             <br>
@@ -319,15 +317,15 @@
 
         <div class="donut" id="donut">
             <div class="center" id="center">
-                <button class="start-game-btn" id="start-game-btn" disabled>INICIAR<br>PARTIDA</button>
+                <button class="start-game-btn" id="start-game-btn">INICIAR<br>PARTIDA</button>
             </div>
         </div>
 
         <div class="controls" id="controls">
-            <button class="control-btn correct-btn" id="correct-btn" disabled>Correcto</button>
-            <button class="control-btn incorrect-btn" id="incorrect-btn" disabled>Incorrecto</button>
-            <button class="control-btn pass-btn" id="pass-btn" disabled>Pasa palabra</button>
-            <button class="control-btn continue-btn" id="continue-btn" disabled>Continuar</button>
+            <button class="control-btn correct-btn" id="correct-btn">Correcto</button>
+            <button class="control-btn incorrect-btn" id="incorrect-btn">Incorrecto</button>
+            <button class="control-btn pass-btn" id="pass-btn">Pasa palabra</button>
+            <button class="control-btn continue-btn" id="continue-btn">Continuar</button>
         </div>
 
         <div class="end-screen" id="end-screen">
@@ -356,9 +354,6 @@
         const continueBtn = document.getElementById("continue-btn");
         const incorrectBtn = document.getElementById("incorrect-btn");
         const startGameBtn = document.getElementById("start-game-btn");
-
-        const connectionStatusIN = document.getElementById("connection-status-in");
-        const connectionStatusOUT = document.getElementById("connection-status-out");
 
         const continueEvent = new EventTarget();
 
@@ -496,7 +491,6 @@
         }
 
         function start() {
-            send("Partida iniciada");
             setTimeout(() => {
                 startGameBtn.style.opacity = "0";
             }, 200);
@@ -505,7 +499,7 @@
             }, 600);
             setTimeout(() => {
                 actionsEnabled = true;
-                // controls.style.opacity = "1";
+                controls.style.opacity = "1";
                 player1Name.textContent = players[0].name;
                 player2Name.textContent = players[1].name;
                 startTimer();
@@ -614,10 +608,8 @@
                     center.style.fontSize = "26px"
                     center.textContent = "CAMBIO DE TURNO"
                     continueEvent.addEventListener("wake-up", resolve, { once: true });
-                    send("En espera para cambio de turno");
                 });
                 actionsEnabled = true;
-                send("Cambio de turno ejecutado");
                 setTimeout(() => {
                     donut.style.opacity = 0;
                 }, 300);
@@ -657,8 +649,6 @@
                 LETTER_ELEMENTS[player.index].classList.add("active");
                 let clue = `${player.clues[LETTERS[player.index]]}`
                 center.textContent = clue;
-                // send(player.name + " - " + clue);
-                send("CLUE," + player.name + "," + LETTERS[player.index]);
             }
 
             renderScore();
@@ -674,7 +664,6 @@
                 panel.score.classList.toggle("active-player", position === activePlayerIndex);
                 scoreForController += player.name + " | Correcto: " + player.correct + " | Incorrecto: " + player.incorrect + " | Tiempo: " + formatTime(player.time) + ",";
             });
-            send("SCORE," + scoreForController);
         }
 
         function finishGame() {
@@ -687,7 +676,6 @@
                 element.classList.remove("active-player");
             });
             donut.classList.add("infinite-rotation");
-            send("Partida finalizada");
             actionsEnabled = false;
             finished = true;
         }
@@ -700,87 +688,6 @@
             const seconds = abs % 60;
 
             return `${sign}${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-        }
-    </script>
-
-    <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-
-    <script>
-        let connectionOUT = null;
-
-        const peerIN = new Peer("68c26dca-d0ea-4a98-a61d-0ef46e5d8ad8", {
-            debug: 0
-        });
-
-        peerIN.on("open", id => {
-            console.log("Connection ID:", id, "(IN)");
-            connectionStatusIN.textContent = "IN: Esperando conexión...";
-        });
-
-        peerIN.on("connection", connection => {
-            console.log("IN: Connection established");
-            connectionStatusIN.textContent = "IN: Conexión establecida";
-            connectionStatusOUT.textContent = "OUT: Conectando...";
-
-            connection.on("data", data => {
-                handleRemoteCommand(data);
-            });
-
-            const peerOUT = new Peer();
-            peerOUT.on("open", () => {
-                connectionOUT = peerOUT.connect("898998c9-d56f-411c-a962-2d83af0a1006");
-                connectionOUT.on("open", () => {
-                    console.log("OUT: Connection established");
-                    connectionStatusOUT.textContent = "OUT: Conexión establecida";
-                    startGameBtn.disabled = false;
-                });
-            });
-        });
-
-        function remoteStart() {
-            start();
-        }
-
-        function remoteCorrect() {
-            correct();
-        }
-
-        function remoteIncorrect() {
-            incorrect();
-        }
-
-        function remotePass() {
-            pass();
-        }
-
-        function remoteContinue() {
-            continueGame();
-        }
-
-        function handleRemoteCommand(command) {
-            switch (command) {
-                case "START":
-                    remoteStart();
-                    break;
-                case "CORRECT":
-                    remoteCorrect();
-                    break;
-                case "INCORRECT":
-                    remoteIncorrect();
-                    break;
-                case "PASS":
-                    remotePass();
-                    break;
-                case "CONTINUE":
-                    remoteContinue();
-                    break;
-            }
-        }
-
-        function send(command) {
-            if (connectionOUT && connectionOUT.open && !finished) {
-                connectionOUT.send(command);
-            }
         }
     </script>
 </body>

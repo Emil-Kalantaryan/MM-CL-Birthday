@@ -19,6 +19,7 @@
             flex-direction: column;
             justify-content: center;
             background-color: #0A2A43;
+            padding-top: env(safe-area-inset-top);
         }
 
         button {
@@ -126,7 +127,7 @@
     <p class="game-status" id="game-status"></p>
     <p class="score-board" id="score-board-player1"></p>
     <p class="score-board" id="score-board-player2"></p>
-
+    <br><br>
     <script>
         const player1Clues = new Map([
             ["A", "Con la A: Segundo nombre tan bueno que, objetivamente, el resto juega en otra liga.<br><br>Respuesta: Alberto"],
@@ -148,11 +149,11 @@
             ["P", "Con la P: ¿Qué aspecto físico dirías que destaca más de ti? Iba a decir otra cosa, pero como no la he visto... es algo que tienes en la cabeza.<br><br>Respuesta: Pelo o Pelazo"],
             ["Q", "Con la Q: Si en el comité hay un conflicto y no se logra un acuerdo, ¿qué trámite entra en acción?<br><br>Respuesta: Querella"],
             ["R", "Con la R: Nombre del grupo de música que se inspira en el accidente ocurrido en una base aérea.<br><br>Respuesta: Ramstein"],
-            ["S", "Con la S: Videojuego en que más dinero has invertido y aun así no te parece suficiente.<br><br>Respuesta: Star Citizen"],
+            ["S", "Con la S: Videojuego en el que más dinero has invertido y aun así no te parece suficiente.<br><br>Respuesta: Star Citizen"],
             ["T", "Con la T: Forma de viajar instantáneamente sin coche, sin tráfico y sin saber si llegas con todas tus moléculas.<br><br>Respuesta: Teletransportarse/Teletransporte"],
             ["U", "Con la U: Lugar enorme donde las naves espaciales no usan intermitentes, los Jedi se pierden sin GPS y todo explota tarde o temprano.<br><br>Respuesta: Universo"],
             ["V", "Con la V: Grupo de danza y música español, formado por siete hermanos que revolucionaron el flamenco fusión y coincidente con el apellido de un compañero de trabajo.<br><br>Respuesta: Vivancos"],
-            ["W", "Con la W: Completa la frase de una popular pelicula española. Me debes 3000 pesetas de...<br><br>Respuesta: Whisky"],
+            ["W", "Con la W: Completa la frase de una popular película española. Me debes 3000 pesetas de...<br><br>Respuesta: Whisky"],
             ["X", "Con la X: Caza de combate letal del universo Star Wars.<br><br>Respuesta: X-Wing"],
             ["Y", "Con la Y: Término coloquial para describir algo que da mal rollo o miedo.<br><br>Respuesta: Yuyu"],
             ["Z", "Contiene la Z: Espacio musical epicentro de algunos de los acontecimientos musicales más relevantes de Barcelona situado en el Poblenou y que seguro que has ido muchas veces.<br><br>Respuesta: Razzmatazz"]
@@ -168,13 +169,13 @@
             ["H", "Con la H: Arte mágico de la saga “Nacidos de la Bruma” que permite robar y transferir habilidades mediante clavos metálicos.<br><br>Respuesta: Hemalurgia"],
             ["I", "Contiene la I: Nombre completo de tu técnica favorita que emprendió un nuevo camino en abril del 2025.<br><br>Respuesta: Cristina"],
             ["J", "Con la J: Nombre completo del miembro de tu equipo que se incorporó en diciembre del 2016.<br><br>Respuesta: Jose Maria Muñoz"],
-            ["K", "Con la K: Tejido de altísima resistencia usado como refuerzo en palas de padel y otros elementos, aportando gran rigidez.<br><br>Respuesta: Kevlar"],
+            ["K", "Con la K: Tejido de altísima resistencia usado como refuerzo en palas de pádel y otros elementos, aportando gran rigidez.<br><br>Respuesta: Kevlar"],
             ["L", "Con la L: Proyecto que empezó Vanesa, acabó Laura, impactó a Oriol y a Santo Cristo y aun sigue con nosotros como puerta de entrada a nuestros cursos.<br><br>Respuesta: Lobby"],
             ["M", "Contiene la M: Serie muy famosa ambientado en el universo Star Wars.<br><br>Respuesta: The Mandalorian"],
             ["N", "Con la N: Partícula subatómica sin carga eléctrica que reside en el núcleo de los átomos.<br><br>Respuesta: Neutrón"],
             ["Ñ", "NO contiene la Ñ: Tu juego de mesa preferido donde no se conoce el miedo.<br><br>Respuesta: Forbidden Stars"],
             ["O", "Contiene la O: Juego de mesa de los años 80 donde un bárbaro, un enano, un elfo y un mago, intentan derrotar al malvado Zargon en un conjunto de mazmorras.<br><br>Respuesta: HeroQuest"],
-            ["P", "Con la P: Cuál es el deporte considerado de personas mayores y que ahora está de moda.<br><br>Respuesta: Padel"],
+            ["P", "Con la P: Cuál es el deporte considerado de personas mayores y que ahora está de moda.<br><br>Respuesta: Pádel"],
             ["Q", "Contiene la Q: Con qué herramienta te diste en la cabeza practicando tu deporte favorito de personas mayores, probablemente gracias a tu competitividad.<br><br>Respuesta: Raqueta"],
             ["R", "Con la R: Nombre en inglés de una montaña rusa interior con fuego real, presente en el parque de atracciones de Orlando.<br><br>Respuesta: Revenge of the Mummy"],
             ["S", "Con la S: Compañero de pádel de Martín mu malo.<br><br>Respuesta: Sergio"],
@@ -263,6 +264,9 @@
                     } else {
                         return;
                     }
+                }
+                if (!started || finished) {
+                    return;
                 }
                 connection.send(command);
             }
